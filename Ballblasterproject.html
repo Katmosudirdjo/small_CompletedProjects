@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>ballBlaster</title>
+
+	<script src="https://rawgit.com/stevekrouse/WoofJS/master/dist/woof.js"></script>
+
+</head>
+
+<body>
+
+<script>
+	setBackdropURL('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAcsVka2StMABccU9y0H3uXMR6As_MoG00G2KmfyVC_Xr1PESm')
+	setBackdropColor('white')  
+
+
+	var meteorSpeed = 5
+	var counter = 0
+	var bulletDamage = 5
+
+	var blaster = new Image({
+	  url: "https://firebasestorage.googleapis.com/v0/b/woofjs-d1b27.appspot.com/o/UserImageUpload%2FcTbCCBRiQMSPwGnzWjdSuPE3Fpu1%2FBlaster%2F19m7zfw03smjo0rw1rc?alt=media&token=a2376420-609e-494c-97ee-69cd10be11d7" ,
+	  width: 120, 
+	  height: 100, 
+	  x: 0, 
+	  y: -200
+	})
+
+	var pointsLabel = new Text({
+  		text: () => "Points: " + pointsCounter, 
+  		size: 30, 
+  		color: "purple", 
+  		fontFamily: "arial", 
+  		textAlign: "left",
+  		x: minX + 100,
+  		y: maxY - 50
+
+	})
+
+	var winText = new Text({
+  		text: () => "YOU LOST",
+  		size: 50, 
+  		color: "green", 
+  		fontFamily: "arial", 
+  		textAlign: "left",
+  		x: ((minX + maxX) / 2) - 100,
+  		y: (minY + maxY) / 2
+	})
+	winText.hide()
+
+	var blasterLives = new Text({
+  		text: () => "Lives: " + numberOfBlasterLivesLeft, 
+  		size: 30, 
+  		color: "purple", 
+  		fontFamily: "arial", 
+  		textAlign: "left",
+  		x: ((minX + maxX) / 2) - 100,
+  		y: maxY - 50
+
+	})
+
+	var waveCounterLabel = new Text({
+  		text: () => "Wave: " + numberOfCurrentWave, 
+  		size: 30, 
+  		color: "purple", 
+  		fontFamily: "arial", 
+  		textAlign: "left",
+  		x: maxX - 150,
+  		y: maxY - 50,
+  		showing: false
+
+	})
+	
+	var enemiesLeft = new Text({
+  		text: () => "Enemies Left: " + numberOfEnemiesLeft, 
+  		size: 30, 
+  		color: "purple", 
+  		fontFamily: "arial", 
+  		textAlign: "left",
+  		x: maxX - 300,
+  		y: maxY - 50
+
+	})
+	
+	var numberOfBlasterLivesLeft = 3
+  	var meteorSprites = []
+  	var meteorLabels = []
+  	var cannonBalls = []
+  	var justFired = false
+  	var pointsCounter = 0
+  	var numberOfCurrentWave = 1
+	var totalNumberOfEnemies = numberOfCurrentWave + 4
+	var numberOfEnemiesLeft = totalNumberOfEnemies
+	var blasterJustKilled = false
+// start creation -----------------------------------------
+
+	repeat(totalNumberOfEnemies, () => {
+	 	
+	 	var totalObjectAngle = random(-45, 45)	 	
+	 	var life = bulletDamage * random(3, 6)
+	 	
+	 	var meteor = new Circle({
+		  sides: 6, 
+		  radius: 2 * life, 
+		  color: "red"
+		})
+		meteor.x = random(maxX, minX)
+		meteor.y = random(190, 210)
+		meteor.angle = totalObjectAngle
+		meteor.number = counter 
+		meteorSprites.push(meteor)
+	
+		var meteorLabel = new Text({
+	  		text: () => meteorLabel.life, 
+	  		size: 2*life, 
+	  		color: "black", 
+	  		fontFamily: "arial", 
+	  		textAlign: "middle"
+		})
+		
+		meteorLabel.x = meteor.x-20 
+		meteorLabel.y = meteor.y
+		meteorLabel.angle = totalObjectAngle
+		meteorLabel.life = 2 * life
+		meteorLabel.meteorNumber = counter
+		meteorLabels[counter] = meteorLabel
+		
+		counter ++
+		// console.log(counter)
+
+
+	  }) 
+
+	meteorLabels.forEach((label,index)  => {
+		console.log(index+"  "+label.size)
+	})
+	console.log (meteorLabels)
+	  // end creation ---------------------------------
+
+
+
+		 
+ 
+//----------------------------------------- 
+ 
+// function findmeteor(meteor) {
+// 	return
+// }
+
+
+forever(() => {
+  
+ // move the blaster
+  blaster.x = mouseX
+	
+  
+
+  cannonBalls.forEach(cannonBall => {
+  	cannonBall.y = cannonBall.y + 5
+  	if(cannonBall.y > maxY) {
+		cannonBall.x = 1000000
+		cannonBall.delete ()
+		cannonBalls.remove (cannonBall)
+		}
+	})
+
+  	// firing cannonBall
+
+ 
+  	
+	onKeyDown(() => {
+ 		
+ 		if (keysDown.includes('Space') && justFired === false) {
+   		
+   			var cannonBall = new Image({
+	  			url: "https://gamepedia.cursecdn.com/arksurvivalevolved_gamepedia/8/88/Simple_Bullet.png" ,
+	  			width: 47, 
+	  			height: 47, 
+	  			x: blaster.x +4, 
+	  			y: blaster.y + 37
+			})
+			cannonBalls.push (cannonBall)
+			justFired = true
+
+			after(.3, "seconds", () => {
+  			justFired = false 
+			})
+		}
+	})// on keys down
+
+
+		
+// move meteors
+meteorSprites.forEach(meteor => {
+
+		if (meteor.touching (blaster) && blasterJustKilled === false){
+			numberOfBlasterLivesLeft -= 1
+			blasterJustKilled = true
+			after(2, "seconds", () => {
+			blasterJustKilled = false
+		})
+
+		}
+
+		if (numberOfBlasterLivesLeft <0){
+			setBackdropColor("black")
+			blaster.hide()
+			pointsLabel.text = " "
+			waveCounterLabel.text = " "
+			blasterLives.text = " "
+			winText.show()
+			enemiesLeft.x -= 90
+			enemiesLeft.y -= 15
+			enemiesLeft.size = 40
+
+			meteor.x = 100000
+			meteor.delete()
+			meteorSprites.remove(meteor)
+		}
+		
+
+
+		
+		meteor.move(meteorSpeed) 
+
+		meteorLabels [meteor.number].x = meteor.x-20 
+		meteorLabels [meteor.number].y = meteor.y
+        let angleShift = random(-10,10)
+  
+		if(meteor.x > maxX) {
+			meteor.angle = (meteor.angle += 90+angleShift)
+			meteor.x = maxX
+		}
+		  
+		if(meteor.y < minY) {
+			meteor.angle = (meteor.angle += 90+angleShift)
+			meteor.y = minY               
+		}
+		  
+		if(meteor.y > maxY) {
+			meteor.angle = (meteor.angle += 90+angleShift)
+			meteor.y = maxY
+		}
+		  
+		if(meteor.x < minX) {
+			meteor.angle = (meteor.angle += 90+angleShift)
+		    meteor.x = minX
+		}
+		
+
+		// hit code
+		cannonBalls.forEach(cannonBall => {
+			//dmg
+			if (meteor.touching(cannonBall)){
+				meteorLabels [meteor.number].size += -bulletDamage/2
+				meteorLabels [meteor.number].life += -bulletDamage
+				// pointsCounter = pointsCounter + meteorLabels [meteor.number].size
+				// meteor.length += -15
+				meteor.color = randomColor ()
+				meteor.radius -= bulletDamage/2
+				pointsCounter = pointsCounter + bulletDamage
+				cannonBall.y = -10000
+				cannonBall.delete()
+				cannonBalls.remove(cannonBall)
+			} //if
+			
+
+			//death
+			if (meteorLabels [meteor.number].life <= bulletDamage && meteorLabels [meteor.number].x < 1000 ){
+				meteor.x = 100000
+				meteor.delete()
+				meteorSprites.remove(meteor)
+				
+				// get rid of labelz
+				meteorLabels [meteor.number].x = 5000
+		
+				meteorLabels [meteor.number].delete ()
+				numberOfEnemiesLeft -= 1
+
+				cannonBall.y = -10000
+				cannonBall.delete()
+				cannonBalls.remove(cannonBall)
+				justKilled = true
+				
+			} //if 
+		}) // forEach cannpnballs
+
+	}) // forEach 1
+
+
+	if (numberOfEnemiesLeft < 1) {
+			setBackdropURL("https://i.gifer.com/5Q17.gif")
+			winText.text = "You Won !!"
+			winText.color = "pink"
+			winText.show()
+		}
+
+}) // forever
+
+
+// if(meteor.touching(blaster)){
+// 	setBackdropColor("black")
+// 	blaster.hide()
+// 	meteor.delete()
+// 	meteorSprites.remove(meteor)
+// }
+ // move each meteor
+
+
+
+// // move labels
+// meteorSprites.forEach(mLabel => {
+
+// mLabel.move(meteorSpeed) 
+
+// if(mLabel.x > maxX) {
+// 	mLabel.angle = (mLabel.angle += 270)
+// }
+  
+// if(mLabel.y < minY) {
+// 	mLabel.angle = (mLabel.angle += random(150, 210))                 
+// }
+  
+// if(mLabel.y > maxY) {
+// 	mLabel.angle = (mLabel.angle -= 270)
+// }
+  
+// if(mLabel.x < minX) {
+// 	mLabel.angle = (mLabel.angle += random(150, 210))
+// }
+// if(meteorLabel.touching(blaster)){
+// 	setBackdropColor("black")
+// 	blaster.hide()
+// 	meteorLabel.delete()
+// 	meteorLabels.remove(meteorLabel)
+// }
+// }) // move each mLabel
+// }) // close forever
+
+
+</script>
+</body>
+</html>
+
+
+ 

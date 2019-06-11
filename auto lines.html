@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>drawing</title>
+
+<script src= "https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
+<script src= "http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.6/addons/p5.dom.js"></script>
+
+</head>
+
+<body>
+
+<script>
+
+
+class Tree {
+	constructor(leafColor, trunkColor, treeCenterX, treeCenterY,treeSize) {
+		this.leafColor = leafColor;
+		this.trunkColor = trunkColor;
+		this.treeCenterX = treeCenterX;
+		this.treeCenterY = treeCenterY;
+		this.treeSize = treeSize
+	}
+  show() {
+    noStroke()
+	// fill(120,20,20)
+	fill(this.trunkColor)
+	// rect(290, 300, 20, 150);
+	rect(this.treeCenterX - 10,this.treeCenterY,20 * this.treeSize,125 * this.treeSize)
+		// if(mouseIsPressed){
+		//   	fill(20,80,80)
+		//   }else{
+		//   	fill("brown")
+		//   }
+	fill(this.leafColor)
+	ellipse(this.treeCenterX, this.treeCenterY, 100 * this.treeSize, 100 * this.treeSize);
+  }
+}
+
+
+
+function setup() {
+	var screenSizeX = windowWidth;
+	var screenSizeY = windowHeight;
+	createCanvas(screenSizeX,screenSizeY);
+	
+	var basicLeafColor = color(random(255),random(255),random(255));
+	var firstTree = new Tree(basicLeafColor,("brown"),random(screenSizeX),random(screenSizeY),1);
+	firstTree.show();
+	// text(firstTree.trunkColor, firstTree.leafColor)
+	// text(firstTree.trunkColor + " " + firstTree.leafColor, 10, 30);
+
+noLoop()
+
+
+
+	
+}
+
+
+function draw() {
+
+
+	for (treeCounter = 2, x = 1; treeCounter > 1; treeCounter = treeCounter - 1){
+    var basicLeafColor = color(random(255),random(255),random(255));
+	var screenSizeX = windowWidth;
+	var screenSizeY = windowHeight;
+	var firstTree = new Tree(basicLeafColor,("brown"),random(screenSizeX),random(screenSizeY),x);
+    firstTree.show();
+    text("level number" + treeCounter, 300, 300);
+
+  	}
+
+
+}
+
+function mousePressed() {
+  loop();
+}
+
+function mouseReleased() {
+  noLoop();
+}
+
+</script>
+
+</body>
+
+</html>

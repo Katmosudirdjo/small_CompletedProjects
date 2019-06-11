@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Trees</title>
+
+<script src= "https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
+<script src= "http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.6/addons/p5.dom.js"></script>
+
+</head>
+
+<body>
+
+<script>
+
+
+class Tree {
+	constructor(leafColor, rTrunkColor, gTrunkColor, bTrunkColor, treeCenterX, treeCenterY,treeSize,leafCount,treeAge = 0,xValue = 0,opacityValue,stumpVariation = 0) {
+		this.rLeafColor = random(255)
+		this.gLeafColor = random(255)
+		this.bLeafColor = random(255)
+		this.opacityValue = opacityValue;
+		this.leafColor = color(this.rLeafColor,this.gLeafColor,this.bLeafColor,this.opacityValue);
+		this.rTrunkColor = rTrunkColor
+		this.gTrunkColor = gTrunkColor
+		this.bTrunkColor = bTrunkColor
+		this.treeCenterX = treeCenterX;
+		this.treeCenterY = treeCenterY;
+		this.treeSize = treeSize;
+		this.leafCount = leafCount;
+		this.treeAge = treeAge;
+		this.xValue = xValue;
+		this.stumpVariation = stumpVariation
+	}
+  showTrunk() {
+    noStroke()
+	// fill(120,20,20)
+	fill(this.rTrunkColor,this.gTrunkColor,this.bTrunkColor,this.opacityValue + 50)
+	// rect(290, 300, 20, 150);
+	rect(this.treeCenterX - 8 - (1 * sin((0.07)*this.xValue)),this.treeCenterY + this.stumpVariation/2.2, (2/3) * this.treeSize, (125/30) * this.treeSize - this.stumpVariation/2.2)
+		// if(mouseIsPressed){
+		//   	fill(20,80,80)
+		//   }else{
+		//   	fill("brown")
+		//   }
+  }
+  showLeaves(){
+  	noStroke()
+  	fill(this.rLeafColor,this.gLeafColor,this.bLeafColor,this.opacityValue)
+	ellipse(this.treeCenterX, this.treeCenterY, (100/30) * this.treeSize, (100/30) * this.treeSize);
+	stroke(165,42,42,this.opacityValue)
+	ellipse(this.treeCenterX, this.treeCenterY, (100/35) * this.treeSize, (100/35) * this.treeSize);
+	text(this.xValue,this.treeCenterX,this.treeCenterY)
+  }
+  age(){
+  	this.stumpVariation += 0.2
+  	this.xValue += 1
+	// var yValue =  (-1) * (sq(this.xValue - 0.5)) + 3
+	var yValue = (1 * sin((0.07)*this.xValue) - 0.1) 
+	this.treeSize = this.treeSize + yValue
+	this.opacityValue -= 1
+	
+  }
+  alignment(){
+  	// 
+  	if(this.treeSize < 0.9){
+  		this.treeCenterY +=  (1 * sin((0.07)*this.xValue) - 0.1) - 2.8 * (1 * sin((0.07)*this.xValue) - 0.1)
+  	}else{
+  		this.treeCenterY -=  (1 * sin((0.07)*this.xValue) - 0.1) + 2.8 * (1 * sin((0.07)*this.xValue) - 0.1)
+  	}
+  }
+}
+class SecondTypeOfTree extends Tree{
+	showLeaves(){
+	noStroke()
+
+	var triangleCounter = 3
+	var k = 0
+	for(triangleCounter = this.leafCount, k = 0; triangleCounter > 1; triangleCounter -= 1, k += 20){
+		var offset = (random(50))
+		// set color
+		var oneLeafColor = color(this.rLeafColor - offset,this.gLeafColor + offset, this.bLeafColor, this.opacityValue) 
+		// fill
+		fill (oneLeafColor)
+		triangle(this.treeCenterX - this.treeSize - (k/2), this.treeCenterY + this.treeSize + k, this.treeCenterX + this.treeSize + (k/2), this.treeCenterY + this.treeSize + k, this.treeCenterX, this.treeCenterY - this.treeSize + k)
+		text(this.xValue,this.treeCenterX,this.treeCenterY)
+	}
+
+	stroke(0,0,0,this.opacityValue)
+	for(triangleCounter = this.leafCount, k = 10; triangleCounter > 1; triangleCounter -= 1, k += 20){
+		var offset = (random(70))
+		// set color
+		var oneLeafColor = color(this.rLeafColor - offset,this.gLeafColor + offset, this.bLeafColor, this.opacityValue) 
+		// fill
+		fill (oneLeafColor)
+		triangle(this.treeCenterX - this.treeSize, this.treeCenterY + this.treeSize + k, this.treeCenterX + this.treeSize, this.treeCenterY + this.treeSize + k, this.treeCenterX, this.treeCenterY - this.treeSize + k)
+	}
+
+	}
+	showTrunk(){
+		noStroke()
+	// fill(120,20,20)
+	fill(this.rTrunkColor,this.gTrunkColor,this.bTrunkColor,this.opacityValue + 50)
+	// rect(290, 300, 20, 150);
+	rect(this.treeCenterX - 12 - 0.5 * (1 * sin((0.07)*this.xValue)),this.treeCenterY + this.stumpVariation, (2/3) * this.treeSize, (125/30) * this.treeSize - this.stumpVariation)
+	}
+}
+class ThirdTypeOfTree extends Tree{
+	showLeaves(){
+		var ellipseCounter = 4
+		var xK = 0
+		var yK = 0
+		var xOffSet = 0
+		stroke(0,0,0,this.opacityValue)
+		//loop 3 times
+		for(ellipseCounter = this.leafCount -1, xK = 0, yK, xOffSet = random(2,10); ellipseCounter > 1; ellipseCounter -= 1, xK += 15, yK += 15){
+		// random offset
+		var offset = (random(255))
+		// set color
+		var oneLeafColor = color(this.rLeafColor - offset,this.gLeafColor + offset, this.bLeafColor, this.opacityValue) 
+		// fill
+		fill (oneLeafColor)
+		
+		ellipse(this.treeCenterX - xK, this.treeCenterY + yK, (60/40) * this.treeSize, (60/40) * this.treeSize)
+		ellipse(this.treeCenterX + xK, this.treeCenterY + yK, (60/40) * this.treeSize, (60/40) * this.treeSize)
+
+		ellipse(this.treeCenterX - xK, this.treeCenterY + yK - xOffSet, (60/40) * this.treeSize, (60/40) * this.treeSize)
+		ellipse(this.treeCenterX + xK, this.treeCenterY + yK - xOffSet, (60/40) * this.treeSize, (60/40) * this.treeSize)
+
+		ellipse(this.treeCenterX - xK, this.treeCenterY + yK - xOffSet - 20, (60/40) * this.treeSize, (60/40) * this.treeSize)
+		ellipse(this.treeCenterX + xK, this.treeCenterY + yK - xOffSet - 20, (60/40) * this.treeSize, (60/40) * this.treeSize)
+		
+		text(this.xValue,this.treeCenterX,this.treeCenterY)
+	}
+}
+}
+	
+	var whichTree = [
+	Tree, SecondTypeOfTree, ThirdTypeOfTree
+	]
+	var treeSortingArray = []
+	var readyToTree = 0
+
+
+function setup() {
+	var screenSizeX = windowWidth;
+	var screenSizeY = windowHeight;
+	createCanvas(screenSizeX,screenSizeY);
+
+	var basicLeafColor = color(random(255),random(255),random(255)); 
+    
+	noLoop()
+	frameRate(10)
+
+	
+}
+
+ 
+
+function draw() {
+  background("white")
+  	textSize(14);
+	fill(0)
+	text( "Living Forrest by Kiki T.", 800, 30);
+  
+  readyToTree ++
+ 
+ if (readyToTree === 5) {
+     readyToTree = 0
+    var basicLeafColor = color(random(255),random(255),random(255));	
+	var screenSizeX = windowWidth;
+	var screenSizeY = windowHeight;
+	var treeToShow = random(whichTree)
+	var newTreeX = random(screenSizeX);
+	var newTreeY = random(screenSizeY)
+
+	var firstTree = new treeToShow(basicLeafColor,random(140,210),random(32,62),random(32,62),newTreeX,newTreeY,30,random(3,6),0,0,255);
+    text("adding tree!", newTreeX, newTreeY);
+    treeSortingArray.push(firstTree)
+  }
+  	// console.log(treeSortingArray.length)
+
+  	// sort the trees by their y position so trees appear in the background if they are high up to create depth
+			// trees.sort((a, b) => a.y - b. y);
+			// // draw each tree
+			// trees.forEach(tree => tree.show());
+
+	treeSortingArray.sort((treeA,treeB)=> {
+
+		if(treeA.treeCenterY > treeB.treeCenterY){
+			return  1;
+		} 
+		if (treeB.treeCenterY > treeA.treeCenterY){
+			return -1;
+		}
+		
+		if (treeB.treeCenterY === treeA.treeCenterY){
+			return 0
+		}	
+	})
+
+	treeSortingArray.forEach(trees => {
+		trees.alignment();
+		trees.age();
+		trees.showTrunk();
+		trees.showLeaves();
+	})
+	
+}
+
+function mousePressed() {
+  loop();
+}
+
+function mouseReleased() {
+  noLoop();
+}
+
+</script>
+
+</body>
+
+</html>

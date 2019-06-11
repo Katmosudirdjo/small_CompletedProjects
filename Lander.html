@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Iron Giant After Earth</title>
+
+	<script src="https://rawgit.com/stevekrouse/WoofJS/master/dist/woof.js"></script>
+
+</head>
+
+<body>
+
+<script>
+setBackdropURL('https://d2v9y0dukr6mq2.cloudfront.net/video/thumbnail/B7GrrlQBlixau757h/starry-night-vr-360-animation-loop_rEwJeeTIg_thumbnail-full09.png')
+
+var landingZones = []
+var safeLanding = false
+
+var ironGiant = new Image({
+  url: "https://pre00.deviantart.net/d91e/th/pre/i/2015/105/d/1/the_iron_giant___eyes_pissed_off_by_ryanh1984-d85wlul.png",
+  width: 90, 
+  height: 160,
+  x: randomX(),
+  y: maxY + 100
+})
+
+var surface = new Line({color: "red", 
+  width: 10, 
+  x: maxX, 
+  y: -125, 
+  x1: minX, 
+  y1: -125
+})
+
+surface.hide()
+
+var landingZoneOneI = new Rectangle({
+  width: 80, 
+  height: 60, 
+  x: 150,
+  y: -125,
+  color: "pink"
+})
+
+landingZoneOneI.brightness = 40
+landingZones.push(landingZoneOneI)
+
+var landingZoneOneII = new Rectangle({
+  width: 150, 
+  height: 30, 
+  x: -20,
+  y: -125,
+  color: "pink"
+})
+
+landingZoneOneII.brightness = 40
+landingZones.push (landingZoneOneII)
+
+var landingZoneOneIII = new Rectangle({
+  width: 50, 
+  height: 60, 
+  x: -150,
+  y: -125,
+  color: "pink"
+})
+
+landingZoneOneIII.brightness = 40
+landingZones.push (landingZoneOneIII)
+
+var aimCircle = new Oval({
+  width: 0, 
+  height: 0,
+  color: "red", 
+  x: 0, 
+  y: surface.y
+})
+
+// aimCircle.hide()
+
+var rightThrusterFlame = new Image({
+  url: "https://media.giphy.com/media/47GPQ7ZzivsemHKPvB/giphy.gif",
+  width: 0, 
+  height: 0,
+  x: 0,
+  y: 0
+})
+
+rightThrusterFlame.turnRight(180)
+
+var leftThrusterFlame = new Image({
+  url: "https://media.giphy.com/media/47GPQ7ZzivsemHKPvB/giphy.gif",
+  width: 0, 
+  height: 0,
+  x: 0,
+  y: 0
+})
+
+leftThrusterFlame.turnRight(180)
+
+var shipRocketSound = new Sound({
+	url: "http://www.learncodecraft.com/images/rocket7.wav",
+	loop: false,
+	speed: "normal",
+	volume: "normal"
+})
+
+
+
+var gravityLabel = new Text({
+  		text: () => "", 
+  		size: 30, 
+  		color: "purple", 
+  		fontFamily: "arial", 
+  		textAlign: "left",
+  		x: minX + 50,
+  		y: maxY - 50
+
+	})
+
+	var thrustLabel = new Text({
+  		text: () => "Thrust: " + Math.floor (thrusterPower * 100), 
+  		size: 30, 
+  		color: "purple", 
+  		fontFamily: "arial", 
+  		textAlign: "left",
+  		x: ((minX + maxX) / 2) - 250,
+  		y: maxY - 50
+
+	})
+
+	var yValueLabel = new Text({
+  		text: () => "", 
+  		size: 30, 
+  		color: "purple", 
+  		fontFamily: "arial", 
+  		textAlign: "left",
+  		x: ((minX + maxX) / 2) - 25,
+  		y: maxY - 50
+
+	})
+
+	var downSpeedLabel = new Text({
+  		text: () => "Falling Speed: " + Math.floor (downSpeed), 
+  		size: 30, 
+  		color: "purple", 
+  		fontFamily: "arial", 
+  		textAlign: "left",
+  		x: maxX - 350,
+  		y: maxY - 50,
+	})
+
+	var thrusterPower = 0
+	var deltaThrust = 0.005
+	var downSpeed = 1
+	var gravitationalConstant = 0.075
+	var sideSpeed = 0
+	var flying = true
+	var touchingAZone = false
+	var safeSpeed = 2.5
+	
+	
+
+	if (ironGiant.x < 0){
+		sideSpeed = -(2)
+	}else{
+		sideSpeed = (2)
+	}
+	
+	ironGiant.sendToFront()
+
+forever(()=>{
+
+
+
+if (flying){
+	if (downSpeed > 0){
+		aimCircle.width = (3 * (downSpeed * 10)) 
+		aimCircle.height = (1 * (downSpeed * 10)) 
+		if (aimCircle.width > 120) aimCircle.width = 120;
+		if (aimCircle.height > 40) aimCircle.height = 40;
+
+	}else{
+		aimCircle.width = aimCircle.width + 0
+		aimCircle.height = aimCircle.height + 0
+	}
+
+     downSpeedLabel.text = "Falling Speed: " + Math.floor (downSpeed), 
+
+	aimCircle.x = ironGiant.x
+	
+
+	leftThrusterFlame.width = 3 * (thrusterPower * 60)
+	leftThrusterFlame.height = 3 * (thrusterPower * 60)
+
+	rightThrusterFlame.width = 3 * (thrusterPower * 60)
+	rightThrusterFlame.height = 3 * (thrusterPower * 60)
+	
+	rightThrusterFlame.y = ironGiant.y - 90
+	rightThrusterFlame.x = ironGiant.x + 22
+
+	leftThrusterFlame.y = ironGiant.y - 90
+	leftThrusterFlame.x = ironGiant.x - 22
+
+	if (keysDown.includes('UP')){
+		
+		shipRocketSound.startPlaying ()
+
+		thrusterPower += deltaThrust
+		
+		rightThrusterFlame.width = 3 * (thrusterPower * 60)
+		rightThrusterFlame.height = 3 * (thrusterPower * 60)
+		rightThrusterFlame.y -= (thrusterPower * 55)
+		rightThrusterFlame.show()
+	
+		leftThrusterFlame.width = 3 * (thrusterPower * 60)
+		leftThrusterFlame.height = 3 * (thrusterPower * 60)
+		leftThrusterFlame.y -= (thrusterPower * 55)
+		leftThrusterFlame.show()
+	}else{
+		thrusterPower = 0
+		rightThrusterFlame.hide()
+		leftThrusterFlame.hide()
+	}
+
+	//calculate down speed
+	downSpeed = (downSpeed + 
+		gravitationalConstant) - thrusterPower
+	
+	if (downSpeed < -20){
+		downSpeed = -20
+	}
+
+	//move giant
+	ironGiant.y += -downSpeed
+	ironGiant.x -= sideSpeed
+
+
+	//sides of screen
+	if ((ironGiant.x) > maxX){
+		ironGiant.x = minX 
+	}
+
+	if ((ironGiant.x) < minX){
+		ironGiant.x = maxX 
+	}
+
+
+
+
+		// TEST IF TOUCJING ZONE -- ONLY - KEEP SEPARTE
+		touchingAZone = false
+		landingZones.forEach(zone => {	  	
+		  	if (aimCircle.touching(zone)){
+		  		touchingAZone = true
+		  		//console.log("Touching "+zone.x)
+		  	}
+	     }) // for each
+
+
+
+
+		//now check if its a safe landing or not
+	  	if ((ironGiant.y) - 90 < surface.y){
+			flying = false
+		
+			
+			if (downSpeed < safeSpeed && touchingAZone){
+				gravityLabel.text = "safe"
+				safeLanding = true
+			} else {
+				gravityLabel.text = "crash"
+				safeLanding = false
+				
+			}
+
+			downSpeed = -gravitationalConstant
+			sideSpeed = 0
+			leftThrusterFlame.hide()
+			rightThrusterFlame.hide()
+	   
+        }
+
+		if ((downSpeed) < safeSpeed && touchingAZone === true){
+			aimCircle.color = "green"
+		}else{
+			aimCircle.color = "red"
+		}
+
+
+
+
+ 
+    //color of circle after landing	
+	}else{
+		if (safeLanding === true){
+		aimCircle.color = "green"
+	}else{
+		aimCircle.color = "red"
+	}
+	}
+
+	
+	//flying flag
+})
+
+</script>
+</body>
+</html>
+
+
+ 

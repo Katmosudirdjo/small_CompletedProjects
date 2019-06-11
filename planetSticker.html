@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>drawingII</title>
+
+<script src= "https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
+<script src= "http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.6/addons/p5.dom.js"></script>
+
+</head>
+
+<body>
+
+<script>
+
+
+class cursorLineWeb {
+	constructor(lineColor, lineStartX, lineStartY, 
+		lineMidX, lineMidY, 
+		lineEndX, lineEndY) {
+		this.lineColor = lineColor;
+		this.lineStartX = lineStartX;
+		this.lineStartY = lineStartY;
+		this.lineMidX = lineMidX;
+		this.lineMidY = lineMidY;
+		this.lineEndX = lineEndX;
+		this.lineEndY = lineEndY;
+  }
+  show(){
+	// fill(120,20,20)
+	stroke(this.lineColor)
+	noFill()
+	// rect(290, 300, 20, 150);
+	ellipse(this.lineStartX,this.lineStartY,
+		// this.lineMidX, this.lineMidY, 
+		this.lineEndX,this.lineEndY)
+	
+	line(this.lineMidX,this.lineMidY, this.lineStartX,this.lineStartY)
+  }
+}
+
+
+
+function setup() {
+	var screenSizeX = windowWidth;
+	var screenSizeY = windowHeight;
+	createCanvas(screenSizeX,screenSizeY);
+	
+	var basicLineColor = color(random(255));
+	var firstStrand = new cursorLineWeb(basicLineColor,mouseX,mouseY, 0, 0,
+		// random(screenSizeX/(random(30)),screenSizeY/(random(30))),random(screenSizeX/(random(30)),screenSizeY/(random(30))),
+		random(screenSizeX),random(screenSizeY),);
+	firstStrand.show();
+	// text(firstTree.trunkColor, firstTree.leafColor)
+	// text(firstTree.trunkColor + " " + firstTree.leafColor, 10, 30);
+	frameRate(30)
+noLoop()
+}
+
+
+function draw() {
+
+	// var black = (0,0,0)
+	// var darkGray = (50,50,50)
+	// var mediumGray = (120,120,120)
+	// var lightGray = (200,200,200)
+
+	for (lineCounter = 2; lineCounter >= 1; lineCounter = lineCounter - 1){
+    var basicLineColor = color(random(255));
+	var screenSizeX = windowWidth;
+	var screenSizeY = windowHeight;
+	var repeatLine = new cursorLineWeb(basicLineColor, pwinMouseX, pwinMouseY, mouseX, mouseY, random(100),  random(100), 
+		// random(screenSizeX), random (screenSizeY), 
+		);
+    repeatLine.show();
+
+    text("level number" + lineCounter, 300, 300);
+
+  	}
+
+
+}
+
+function mousePressed() {
+  loop();
+}
+
+function mouseReleased() {
+  noLoop();
+}
+
+</script>
+
+</body>
+
+</html>

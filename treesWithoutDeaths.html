@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>trees</title>
+
+<script src= "https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
+<script src= "http://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.6/addons/p5.dom.js"></script>
+
+</head>
+
+<body>
+
+<script>
+
+
+class Tree {
+	constructor(leafColor, trunkColor, treeCenterX, treeCenterY,treeSize,leafCount,treeAge = 0,xValue = 0,opacityValue = 1000) {
+		this.rLeafColor = random(255)
+		this.gLeafColor = random(255)
+		this.bLeafColor = random(255)
+		this.leafColor = color(this.rLeafColor,this.gLeafColor,this.bLeafColor);
+		this.trunkColor = trunkColor;
+		this.treeCenterX = treeCenterX;
+		this.treeCenterY = treeCenterY;
+		this.treeSize = treeSize;
+		this.leafCount = leafCount;
+		this.treeAge = treeAge;
+		this.xValue = xValue;
+	}
+  showTrunk() {
+    noStroke()
+	// fill(120,20,20)
+	fill(this.trunkColor)
+	// rect(290, 300, 20, 150);
+	rect(this.treeCenterX - 8 - (1 * sin((0.07)*this.xValue)),this.treeCenterY, (2/3) * this.treeSize, (125/30) * this.treeSize)
+		// if(mouseIsPressed){
+		//   	fill(20,80,80)
+		//   }else{
+		//   	fill("brown")
+		//   }
+  }
+  showLeaves(){
+  	noStroke()
+  	fill(this.leafColor)
+	ellipse(this.treeCenterX, this.treeCenterY, (100/30) * this.treeSize, (100/30) * this.treeSize);
+	stroke("brown")
+	ellipse(this.treeCenterX, this.treeCenterY, (100/35) * this.treeSize, (100/35) * this.treeSize);
+	text(this.treeAge,this.treeCenterX,this.treeCenterY + 100)
+  }
+  age(){
+  	this.xValue += 1
+	// var yValue =  (-1) * (sq(this.xValue - 0.5)) + 3
+	var yValue = (1 * sin((0.07)*this.xValue) - 0.1) 
+	this.treeSize = this.treeSize + yValue
+	
+  }
+  alignment(){
+  	// 
+  	if(this.treeSize < 0.9){
+  		this.treeCenterY +=  (1 * sin((0.07)*this.xValue) - 0.1) - 2.8 * (1 * sin((0.07)*this.xValue) - 0.1)
+  	}else{
+  		this.treeCenterY -=  (1 * sin((0.07)*this.xValue) - 0.1) + 2.8 * (1 * sin((0.07)*this.xValue) - 0.1)
+  	}
+  }
+}
+class SecondTypeOfTree extends Tree{
+	showLeaves(){
+	noStroke()
+
+	var triangleCounter = 3
+	var k = 0
+	for(triangleCounter = this.leafCount, k = 0; triangleCounter > 1; triangleCounter -= 1, k += 20){
+		var offset = (random(50))
+		// set color
+		var oneLeafColor = color(this.rLeafColor - offset,this.gLeafColor + offset, this.bLeafColor) 
+		// fill
+		fill (oneLeafColor)
+		triangle(this.treeCenterX - this.treeSize - (k/2), this.treeCenterY + this.treeSize + k, this.treeCenterX + this.treeSize + (k/2), this.treeCenterY + this.treeSize + k, this.treeCenterX, this.treeCenterY - this.treeSize + k)
+		text(this.treeAge,this.treeCenterX,this.treeCenterY + 100)
+	}
+
+	stroke("black")
+	for(triangleCounter = this.leafCount, k = 10; triangleCounter > 1; triangleCounter -= 1, k += 20){
+		var offset = (random(70))
+		// set color
+		var oneLeafColor = color(this.rLeafColor - offset,this.gLeafColor + offset, this.bLeafColor) 
+		// fill
+		fill (oneLeafColor)
+		triangle(this.treeCenterX - this.treeSize, this.treeCenterY + this.treeSize + k, this.treeCenterX + this.treeSize, this.treeCenterY + this.treeSize + k, this.treeCenterX, this.treeCenterY - this.treeSize + k)
+	}
+
+	}
+}
+class ThirdTypeOfTree extends Tree{
+	showLeaves(){
+		var ellipseCounter = 4
+		var xK = 0
+		var yK = 0
+		var xOffSet = 0
+		stroke("black")
+		//loop 3 times
+		for(ellipseCounter = this.leafCount -1, xK = 0, yK, xOffSet = random(2,10); ellipseCounter > 1; ellipseCounter -= 1, xK += 15, yK += 15){
+		// random offset
+		var offset = (random(255))
+		// set color
+		var oneLeafColor = color(this.rLeafColor - offset,this.gLeafColor + offset, this.bLeafColor) 
+		// fill
+		fill (oneLeafColor)
+		
+		ellipse(this.treeCenterX - xK, this.treeCenterY + yK, (60/40) * this.treeSize, (60/40) * this.treeSize)
+		ellipse(this.treeCenterX + xK, this.treeCenterY + yK, (60/40) * this.treeSize, (60/40) * this.treeSize)
+
+		ellipse(this.treeCenterX - xK, this.treeCenterY + yK - xOffSet, (60/40) * this.treeSize, (60/40) * this.treeSize)
+		ellipse(this.treeCenterX + xK, this.treeCenterY + yK - xOffSet, (60/40) * this.treeSize, (60/40) * this.treeSize)
+
+		ellipse(this.treeCenterX - xK, this.treeCenterY + yK - xOffSet - 20, (60/40) * this.treeSize, (60/40) * this.treeSize)
+		ellipse(this.treeCenterX + xK, this.treeCenterY + yK - xOffSet - 20, (60/40) * this.treeSize, (60/40) * this.treeSize)
+		
+		text(this.treeAge,this.treeCenterX,this.treeCenterY + 100)
+	}
+}
+}
+	
+	var whichTree = [
+	Tree, SecondTypeOfTree, ThirdTypeOfTree
+	]
+	var treeSortingArray = []
+
+
+function setup() {
+	var screenSizeX = windowWidth;
+	var screenSizeY = windowHeight;
+	createCanvas(screenSizeX,screenSizeY);
+	
+	var basicLeafColor = color(random(255),random(255),random(255)); 
+	// var firstTree = new SecondTypeOfTree(basicLeafColor,("brown"),random(screenSizeX),random(screenSizeY),30);
+	// firstTree.showTrunk();
+	// firstTree.showLeaves();
+	
+	// text(firstTree.trunkColor, firstTree.leafColor)
+	// text(firstTree.trunkColor + " " + firstTree.leafColor, 10, 30);
+
+
+noLoop()
+frameRate(10)
+
+
+
+	
+}
+
+
+function draw() {
+	background("white")
+
+	for (treeCounter = 1, x = 30; treeCounter > 0; treeCounter = treeCounter - 1){
+
+
+    var basicLeafColor = color(random(255),random(255),random(255));	
+	var screenSizeX = windowWidth;
+	var screenSizeY = windowHeight;
+	var treeToShow = random(whichTree)
+	var firstTree = new treeToShow(basicLeafColor,("brown"),random(screenSizeX),random(screenSizeY),x, random(3,6),0);
+    text("level number" + treeCounter, 300, 300);
+    treeSortingArray.push(firstTree)
+  	}
+  	// console.log(treeSortingArray.length)
+
+  	// sort the trees by their y position so trees appear in the background if they are high up to create depth
+			// trees.sort((a, b) => a.y - b. y);
+			// // draw each tree
+			// trees.forEach(tree => tree.show());
+
+	treeSortingArray.sort((treeA,treeB)=> {
+
+		if(treeA.treeCenterY > treeB.treeCenterY){
+			return  1;
+		} 
+		if (treeB.treeCenterY > treeA.treeCenterY){
+			return -1;
+		}
+		
+		if (treeB.treeCenterY === treeA.treeCenterY){
+			return 0
+		}	
+	})
+
+	treeSortingArray.forEach(trees => {
+		trees.alignment();
+		trees.age();
+		trees.showTrunk();
+		trees.showLeaves();
+	})
+	
+}
+
+function mousePressed() {
+  loop();
+}
+
+function mouseReleased() {
+  noLoop();
+}
+
+</script>
+
+</body>
+
+</html>
