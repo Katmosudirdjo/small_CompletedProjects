@@ -1,0 +1,167 @@
+<!DOCTYPE 
+<html>
+<head>
+<title> Battle Ship </title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<style type = "text/css">
+	#outer-container {
+		width:100%;
+		text-align: center;
+		justify-content: center;
+		font-size: 20px;
+		font-family: "Courier New", Courier, monospace;
+		color: navy blue;
+		border: 1px solid red;
+		margin: auto 0;
+	}
+	.row {
+		color: grey;
+		border: 2px solid blue;
+		padding: 10px;
+		margin: 5px;
+		display: flex;
+	}
+	.board-left {
+		border: 2px solid teal;
+		padding: 10px;
+		float: left;
+		width: 50%;
+		margin: 10px;
+	}
+	.board-right {
+		border: 2px solid teal;
+		padding: 10px;
+		float: right;
+		width: 50%; 
+		margin: 10px;
+	}
+	.header {
+		border: 2px solid orange;
+		padding: 10px;
+		width: 95%;
+		margin: 10px;
+	}
+</style>
+</head>
+<body>
+<h1>Battleship</h1>
+<div id ='outer-container'>
+	<div class = 'header'>
+		<h1>The Bridge</h1>
+			<label for="fireField">Coordinates:</label>
+			<input type="text" id="fireField">
+			<button onclick="fire()">FIRE</button>
+			<div id = "returns"> &nbsp;</div>
+	</div>
+	<div class ='row'> 
+			<div class ="board-left" id = "myShipsGrid">
+				myShipsGrid
+			</div>
+			<div class ="board-right" id = "myHitsGrid">
+				myHitsGrid
+			</div>
+
+
+	</div>
+
+	
+	<div class ='row'> 
+			<div class ="board-left" id = "opponentShipsGrid">
+				opponentShipsGrids
+			</div>
+			<div class ="board-right" id = "opponentHitsGrid">
+				opponentHitsGrid
+
+			</div>
+
+	</div>
+
+</div>
+
+
+
+<script>
+
+
+var size = 10
+	var myShipsGrid = createGrid(".")
+	var myHitsGrid = createGrid(".")
+	var opponentShipsGrid = createGrid(".")
+	var opponentHitsGrid = createGrid(".")
+	var shellStreakAudio = new Audio("http://www.learncodecraft.com/images/shell_streak.wav");	
+	var explosionAudio = new Audio("http://www.learncodecraft.com/images/explosion.wav");
+setup()
+
+function setup(){
+	setupShips()
+	viewGrids()
+}
+
+function setupShips(){
+	opponentShipsGrid[3][5] = "S"
+	opponentShipsGrid[4][5] = "S"
+	opponentShipsGrid[5][5] = "S"
+}
+
+function fire(){
+	var command = document.getElementById("fireField").value
+	var commandArray = command.split("")
+	var cmdLetter = commandArray[0]
+	var fireRow = (cmdLetter.toLowerCase().charCodeAt(0)) - 97;
+	var fireCol = parseInt(commandArray[1]) -1
+	document.getElementById("returns").innerHTML = "firing at: " + fireRow + "," + fireCol
+	shellStreakAudio.play();
+	if(opponentShipsGrid[fireRow][fireCol] == "S"){
+		myHitsGrid[fireRow][fireCol] = "<font color='red'>X</font>"
+        setTimeout(function(){
+             explosionAudio.play();
+        }, 1700);
+	}else{
+		myHitsGrid[fireRow][fireCol] = "<font color='blue'>o</font>"
+	}
+	
+	viewGrids()
+}
+
+function createGrid(letter){
+	var genericGrid = []
+	for(let row = 0; row < size; row++){
+		genericGrid[row] = new Array(size)
+		for(let col = 0; col < size; col++){
+			genericGrid[row][col] = letter
+		}
+	}
+	return genericGrid
+
+}
+
+function viewGrids(){
+	document.getElementById("myShipsGrid").innerHTML = printableGrid(myShipsGrid)
+	document.getElementById("myHitsGrid").innerHTML = printableGrid(myHitsGrid)
+	document.getElementById("opponentShipsGrid").innerHTML = printableGrid(opponentShipsGrid)
+	document.getElementById("opponentHitsGrid").innerHTML = printableGrid(opponentHitsGrid)
+}
+
+function printableGrid(grid){
+	var output = " " 
+	output += "&nbsp;#" + ": " 
+	for(let row = 0; row < size; row++){
+		var headerNumbers = row
+		output += headerNumbers + 1 + " "
+	}
+	output += "<br>"
+	for(let row = 0; row < size; row++){
+		var rowLetter = String.fromCharCode(65 + row)
+		var printableRow = rowLetter + ":" 
+		for(let col = 0; col < size; col++){
+			printableRow += " " + grid[row][col]
+		}
+		output += printableRow + "<br>"
+
+	}
+	return output
+}
+
+</script>
+</body>
+</html>

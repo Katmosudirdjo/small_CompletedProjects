@@ -1,0 +1,346 @@
+<!DOCTYPE 
+<html>
+<head>
+<title> Othello </title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<style type = "text/css">
+	.cell {
+		width:50px;
+		height:50px ;
+		text-align: center;
+		font-size: 20px;
+		background-color: pink;
+		color: brown;
+		border-top: 2.5px solid gray;
+
+		border-left: 2.5px solid gray;
+		border-right: 0px solid gray;
+		border-bottom: 0px solid gray;
+	}
+	.playerOneButton {
+		width: 48px ;
+		height: 48px ;
+		border: 0px;
+		background-color: lavenderblush;
+		box-shadow: inset -2px -2px 2px 4px gray;
+		border-radius: 25px ;
+		border-image-repeat: stretch; 
+	}
+	.playerTwoButton {
+		width: 48px ;
+		height: 48px ;
+		border: 0px;
+		background-color: #333333;
+		box-shadow: inset -2px -2px 2px 4px black;
+		border-radius: 25px ;
+
+	}
+	.noButton {
+		visibility: hidden;
+		width: 48px ;
+		height: 48px ;
+		border: 0px;
+		background-color: red;
+		box-shadow: inset -2px -2px 2px 4px gray;
+		border-radius: 25px ;
+	}
+	button:focus {
+	outline: none;
+	}
+
+</style>
+</head>
+<body>
+
+<table> 
+	<tr><td>
+	<table border=1 id = "tableOfCellsOnView" ></table> 
+	</td><td>
+	<p id = "debugLabel">  </p>
+	<p id = "appendTestLabel"> </p>	
+	</td>
+	</tr>
+</table>
+
+<p id = "debugLabel"> </p>
+<p id = "appendTestLabel"> OTHELLO by K.T. </p>
+
+<script>
+//setup=======================
+	var size = 8
+	var board = []
+	var choiceColor = 'background-color'
+	var playerTurnBasedColor = "W"
+
+	autoGenerateView()
+	fillBoard()
+	board[Math.floor(size/2)][Math.floor(size/2)] = "W"
+	board[Math.floor(size/2)-1][Math.floor(size/2)-1] = "W"
+	board[Math.floor(size/2)][Math.floor(size/2)-1] = "B"
+	board[Math.floor(size/2)-1][Math.floor(size/2)] = "B"
+	printBoard()
+    var outputString = ""
+	
+	
+
+
+function isEmpty (row,col){
+	if (board[row][col].includes("-")) return true
+	else return false
+
+}
+
+
+
+function clickable(passedRow,passedCol,clickedColor){
+	var clickedRow = parseInt(passedRow)
+	var clickedCol = parseInt(passedCol)
+    outputString = ""
+	if (!isEmpty(clickedRow,clickedCol)) {
+		console.log("not empty"+clickedRow+"-"+clickedCol)
+		return false
+	}
+	//walk 8 directions 
+	var upIsGood = walk(clickedRow-1,clickedCol,clickedColor,0,-1)
+	var downIsGood = walk(clickedRow +1,clickedCol,clickedColor,0,1)
+	var rightIsGood = walk(clickedRow,clickedCol + 1,clickedColor,1,0)
+	var leftIsGood = walk(clickedRow,clickedCol - 1,clickedColor,-1,0)
+	var topLeftIsGood = walk(clickedRow-1,clickedCol-1,clickedColor,-1,-1)
+	var topRightIsGood = walk(clickedRow-1,clickedCol+1,clickedColor,1,-1)
+	var bottomLeftIsGood = walk(clickedRow+1,clickedCol-1,clickedColor,-1,1)
+	var bottomRightIsGood = walk(clickedRow+1,clickedCol+1,clickedColor,1,1)
+	
+
+	//diagonals
+   if(upIsGood || downIsGood || rightIsGood || leftIsGood || topLeftIsGood || topRightIsGood || bottomLeftIsGood || bottomRightIsGood) return true
+
+	return false
+
+}
+
+//checks if clickable
+function walk (clickedRow,clickedCol,clickedColor,H,V){
+    var foundOpposite = false
+	var checkColor = (clickedColor == "W")? "B": "W"
+
+	for(let col = clickedCol, row = clickedRow; col >= 0 && col < size && row >= 0 && row < size; col += H, row += V){
+		
+		if(board[row][col].includes ("-")){
+					return false
+		}		
+
+		if(board[row][col] == checkColor){
+			    console.log("opposite"+clickedRow+"-"+clickedCol)
+				foundOpposite = true			
+		}
+
+		if(board[row][col] == clickedColor){
+			if (foundOpposite === true) {
+		       return true
+		    } else {
+		    	return false 
+		    }   
+
+		}					
+	}
+}
+
+
+function decideOnHoverColor (row,col,playerTurnBasedColor){
+	if(clickable(parseInt(row),parseInt(col),playerTurnBasedColor)){
+		return 'green'
+	}else{
+		return 'red'
+	}
+}
+
+//======================== MAIN ACTION CODE =================
+
+// DO HOVER
+$(".cell").hover(
+//figure out row and col
+	function(){
+		var idStr = $(this).attr('id') //"x-y"
+		var cordsArray = idStr.split("-") // [x,y]
+		var row = cordsArray[0]
+		var col = cordsArray[1]
+		$("#appendTestLabel").text(outputString)
+		$(this).css('background-color', decideOnHoverColor(row,col,playerTurnBasedColor))
+	},
+	function(){
+		$(this).css('background-color','pink')
+	}
+)
+
+//DO CLICK
+$(".cell").click(function(){
+
+	var idStr = $(this).attr('id') 
+	var cordsArray = idStr.split("-")
+	var row = cordsArray[0]
+	var col = cordsArray[1]
+
+	if(clickable(parseInt(row),parseInt(col),playerTurnBasedColor)){
+		// update grid
+		if(playerTurnBasedColor == "W"){
+			board[row][col] = "W"
+			doTheFlip(parseInt(row),parseInt(col),board[row][col])
+			playerTurnBasedColor = "B"
+		}else{
+			board[row][col] = "B"
+			doTheFlip(parseInt(row),parseInt(col),board[row][col])
+			playerTurnBasedColor = "W"
+		}
+	}
+//update display
+	printBoard()
+
+})
+
+
+
+
+
+
+//________________________________________-end main code
+
+
+function doTheSingleFlip(clickedRow,clickedCol,clickedColor,H,V){
+
+	var oppositeColor = (clickedColor == "W")? "B": "W"
+
+  	var directionIsGood = walk(clickedRow,clickedCol,clickedColor,H,V)
+    
+    if (directionIsGood){
+    	for(let col = clickedCol, row = clickedRow; col >= 0 && col < size && row >= 0 && row < size; col += H, row += V){
+			if(board[row][col] == oppositeColor){
+				board[row][col] = clickedColor
+			}else{
+				break
+			}
+		}
+    }
+}
+
+function doTheFlip(clickedRow,clickedCol,clickedColor){
+
+	doTheSingleFlip(clickedRow-1,clickedCol,clickedColor,0,-1)
+	doTheSingleFlip(clickedRow +1,clickedCol,clickedColor,0,1)
+	doTheSingleFlip(clickedRow,clickedCol + 1,clickedColor,1,0)
+	doTheSingleFlip(clickedRow,clickedCol - 1,clickedColor,-1,0)
+	doTheSingleFlip(clickedRow-1,clickedCol-1,clickedColor,-1,-1)
+	doTheSingleFlip(clickedRow-1,clickedCol+1,clickedColor,1,-1)
+	doTheSingleFlip(clickedRow+1,clickedCol-1,clickedColor,-1,1)
+	doTheSingleFlip(clickedRow+1,clickedCol+1,clickedColor,1,1)
+
+
+
+}
+
+function winCondition(){
+	var totalsArray = pieceCounter()
+	if (totalsArray[2] == 0){
+		if(totalsArray[0] > totalsArray[1]){
+			return "white"
+		}else{
+			return "black"
+		}	
+	}else{
+		return "notYet"
+	}
+}
+
+function pieceCounter(){
+	var whiteTotal = 0
+	var blackTotal = 0
+	var emptyTotal = 0
+	for(let row = 0; row < size; row++){
+			for(let col = 0; col < size; col++){
+				if (board[row][col] == "B"){
+					blackTotal += 1
+				}
+				if (board[row][col] == "W"){
+					whiteTotal += 1
+				}
+				if (board[row][col].includes("-")){
+					emptyTotal += 1
+				}
+			}
+	}
+	return [whiteTotal,blackTotal,emptyTotal]
+}
+
+	function printBoard(){
+		var displayColor = " "
+		if (playerTurnBasedColor == "B"){
+			displayColor = "Black"
+		}else{
+			displayColor = "White"
+		}
+		var output = "Player Turn: " + displayColor + "<br>"
+
+		for(let row = 0; row < size; row++){
+				var outputRow = ""
+			for(let col = 0; col < size; col++){
+
+				if(board[row][col] == "B"){
+					$('#' +(row)+"-"+(col)).children().removeClass('playerOneButton').removeClass('noButton').addClass('playerTwoButton')
+				}
+				if(board[row][col] == "W"){
+					$('#' +(row)+"-"+(col)).children().removeClass('playerTwoButton').removeClass('noButton').addClass('playerOneButton')
+				}
+
+				// outputRow += board[row][col] + " "
+			}
+
+				// outputRow += "<br>"
+				// output += outputRow
+		}
+
+		var totalsArray = pieceCounter()
+		output += "White Pieces:" + totalsArray[0] + "<br>" + "Black Pieces:" + totalsArray[1]
+		var winner = winCondition()
+		if (winner != "notYet"){
+			output = "The Winner Is:" + winner
+		}
+		document.getElementById("debugLabel").innerHTML = output
+		// whiteTotal + " " + blackTotal
+		
+	}
+
+	function autoGenerateView(){
+		var bigGridString = ""
+		for(let row = 0; row<size; row++){
+			bigGridString += "<tr id = 'rowSet'> <td class = 'cell' id = '"+row+"-0'> <BUTTON class = 'noButton'> </BUTTON> </td>"
+
+			for(let col = 1; col<size; col++){
+				bigGridString += "<td class = 'cell' id = "+row+"-"+col+"> <BUTTON class = 'noButton'> </BUTTON> </td>"
+
+			}	
+			
+			bigGridString += "</tr>"
+
+		}
+
+		$("#tableOfCellsOnView").append(bigGridString)
+	}
+
+
+
+	function fillBoard(){
+		for(let row = 0; row < size; row++){
+			board [row] = new Array(size)
+			for(let col = 0; col < size; col++){
+
+				board[row][col] = row + "-" + col
+			}
+		}
+
+	}
+
+
+
+
+</script>
+</body>
+</html>
